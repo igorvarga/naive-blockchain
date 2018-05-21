@@ -35,7 +35,10 @@ class DefaultChain : Chain {
         }
 
         for (i in 1 until chain.size) {
-            if (chain[i].previousHash != chain[i-1].hash) return false
+            val current = chain[i]
+            val previous = chain[i-1]
+            val hash = (current.previousHash + current.timeStamp.toString() + current.data).sha256()
+            if (current.previousHash != previous.hash || current.hash != hash) return false
         }
 
         return true

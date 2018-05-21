@@ -1,5 +1,7 @@
 package main.hr.oblivion.blockchain.naive
 
+const val MINING_DIFFICULTY: Int = 5
+
 interface Chain {
 
     /**
@@ -21,6 +23,7 @@ interface Chain {
      * List last 10 Blocks in Chain
      */
     fun list()
+
 }
 
 class DefaultChain : Chain {
@@ -37,8 +40,9 @@ class DefaultChain : Chain {
         for (i in 1 until chain.size) {
             val current = chain[i]
             val previous = chain[i-1]
-            val hash = (current.previousHash + current.timeStamp.toString() + current.data).sha256()
-            if (current.previousHash != previous.hash || current.hash != hash) return false
+            if (current.previousHash != previous.hash
+                    || current.hash != Block.hash(current)
+                    || current.hash.take(MINING_DIFFICULTY) != "0".repeat(MINING_DIFFICULTY)) return false
         }
 
         return true
@@ -70,14 +74,22 @@ class DefaultChain : Chain {
 }
 
 fun main(args: Array<String>) {
+
     val chain: Chain = DefaultChain()
 
     val genesis = Block.create("Genesis block", "0")
 
     chain.add(genesis)
+
     println("Genesis block added: $genesis")
 
-    chain.add(Block.create("Second block", genesis.hash))
+    Block.mine(genesis, MINING_DIFFICULTY)
+
+    val second = Block.create("Second block", genesis.hash)
+
+    chain.add(second)
+
+    Block.mine(second, MINING_DIFFICULTY)
 
     chain.list()
 

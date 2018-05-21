@@ -16,6 +16,11 @@ interface Chain {
      * Return last Block from the Chain
      */
     fun last(): Block
+
+    /**
+     * List last 10 Blocks in Chain
+     */
+    fun list()
 }
 
 class DefaultChain : Chain {
@@ -41,6 +46,13 @@ class DefaultChain : Chain {
         return chain.last()
     }
 
+    override fun list() {
+        for (b in chain.takeLast(10)) {
+            println("Last 10 Blocks:")
+            println("Block: $b")
+        }
+    }
+
 }
 
 fun main(args: Array<String>) {
@@ -50,6 +62,7 @@ fun main(args: Array<String>) {
         val genesis = Block.create("test", "0")
         if (chain.add(genesis)) {
             println("Genesis block added: $genesis")
+            chain.list()
         }
     } catch (e: Exception) {
         println("Unable to add genesis block.")

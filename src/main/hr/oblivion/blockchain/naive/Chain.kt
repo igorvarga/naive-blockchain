@@ -25,10 +25,20 @@ interface Chain {
 
 class DefaultChain : Chain {
 
-    private val chain:MutableList<Block> = mutableListOf()
+    private val chain: MutableList<Block> = mutableListOf()
 
     override fun valid(): Boolean {
-        return false
+
+        when (chain.size) {
+            0 -> return false
+            1 -> return "0" == chain.last().previousHash
+        }
+
+        for (i in 1 until chain.size) {
+            if (chain[i].previousHash != chain[i-1].hash) return false
+        }
+
+        return true
     }
 
     override fun add(block: Block): Boolean {
@@ -47,8 +57,9 @@ class DefaultChain : Chain {
     }
 
     override fun list() {
+        println("Last 10 Blocks:")
+
         for (b in chain.takeLast(10)) {
-            println("Last 10 Blocks:")
             println("Block: $b")
         }
     }
@@ -58,13 +69,14 @@ class DefaultChain : Chain {
 fun main(args: Array<String>) {
     val chain: Chain = DefaultChain()
 
-    try {
-        val genesis = Block.create("test", "0")
-        if (chain.add(genesis)) {
-            println("Genesis block added: $genesis")
-            chain.list()
-        }
-    } catch (e: Exception) {
-        println("Unable to add genesis block.")
-    }
+    val genesis = Block.create("Genesis block", "0")
+
+    chain.add(genesis)
+    println("Genesis block added: $genesis")
+
+    chain.add(Block.create("Second block", genesis.hash))
+
+    chain.list()
+
+    println("Chain is valid: ${chain.valid()}")
 }

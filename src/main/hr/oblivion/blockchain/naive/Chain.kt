@@ -91,6 +91,12 @@ fun main(args: Array<String>) {
 
     Block.mine(second, MINING_DIFFICULTY)
 
+    val third = Block.create("Third block", second.hash)
+
+    chain.add(third)
+
+    Block.mine(third, MINING_DIFFICULTY)
+
     chain.list()
 
     println("Chain is valid: ${chain.valid()}")

@@ -41,7 +41,7 @@ class DefaultChain : Chain {
             val current = chain[i]
             val previous = chain[i-1]
             if (current.previousHash != previous.hash
-                    || current.hash != Block.hash(current)
+                    || current.hash != current.hash()
                     || current.hash.take(MINING_DIFFICULTY) != "0".repeat(MINING_DIFFICULTY)) return false
         }
 
@@ -83,19 +83,19 @@ fun main(args: Array<String>) {
 
     println("Genesis block added: $genesis")
 
-    Block.mine(genesis, MINING_DIFFICULTY)
+    genesis.mine(MINING_DIFFICULTY)
 
     val second = Block.create("Second block", genesis.hash)
 
     chain.add(second)
 
-    Block.mine(second, MINING_DIFFICULTY)
+    second.mine(MINING_DIFFICULTY)
 
     val third = Block.create("Third block", second.hash)
 
     chain.add(third)
 
-    Block.mine(third, MINING_DIFFICULTY)
+    third.mine(MINING_DIFFICULTY)
 
     chain.list()
 

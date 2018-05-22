@@ -1,5 +1,9 @@
 package main.hr.oblivion.blockchain.naive
 
+import com.sun.crypto.provider.SunJCE
+import sun.security.ec.SunEC
+import java.security.Security
+
 const val MINING_DIFFICULTY: Int = 5
 
 interface Chain {
@@ -74,6 +78,12 @@ class DefaultChain : Chain {
 }
 
 fun main(args: Array<String>) {
+
+    Security.addProvider(org.bouncycastle.jce.provider.BouncyCastleProvider())
+
+    Security.getProviders().forEach { it.services.forEach { println(it.provider.name + ":" + it.algorithm) }}
+
+    val wallet = Wallet.create()
 
     val chain: Chain = DefaultChain()
 
